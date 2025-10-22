@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        REGISTRY = "192.168.10.1:5000"
+        REGISTRY = "192.168.10.1:5500"
         IMAGE_NAME = "simple-app"
         VERSION = "v01"
     }
