@@ -12,7 +12,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo "📦 Cloning repository..."
-                git branch: 'master', url: 'https://github.com/hakyla/simple-nodejs-app.git'
+                git branch: 'master', url: 'https://github.com/rehanarrow26/simple-nodejs-app.git'
             }
         }
 
@@ -39,14 +39,29 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy to Web Server') {
+    steps {
+        echo "🚀 Deploying to 192.168.10.1 (port 26) using username & password..."
+        withCredentials([usernamePassword(credentialsId: 'ssh_ke_web', usernameVariable: 'SSH_USER', passwordVariable: 'SSH_PASS')]) {
+            sh '''
+                sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no $SSH_USER@192.168.10.1 "
+                    cd /root/simple-app && \
+                    docker compose pull && \
+                    docker compose up -d
+                "
+            '''
+        }
+    }
+}
     }
 
     post {
         success {
-            echo "✅ Build and push completed successfully!"
+            echo "✅ Build, push, and deploy completed successfully!"
         }
         failure {
-            echo "❌ Build or push failed. Please check logs."
+            echo "❌ Build, push, or deploy failed. Please check logs."
         }
     }
 }
